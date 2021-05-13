@@ -5,7 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using SE.Identidade.API.Data;
+using System;
 
 namespace SE.Identidade.API
 {
@@ -29,10 +31,27 @@ namespace SE.Identidade.API
                 .AddDefaultTokenProviders();
 
             services.AddControllers();
+
+            services.AddSwaggerGen(c => 
+            {
+                c.SwaggerDoc(name: "v1", new OpenApiInfo
+                {
+                    Title = "Store Enterprise Identity API",
+                    Description = "Esta API foi construída no projeto do curso ASP.NET Core Enterprise Application",
+                    Contact = new OpenApiContact() { Name = "Bruno Nogueira", Url = new Uri(uriString: "https://brunon.com.br") },
+                    License = new OpenApiLicense() { Name = "MIT", Url = new Uri(uriString: "https://opensource.org/licenses/MIT")}
+                });
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint(url: "/swagger/v1/swagger.json", name: "v1");
+            });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
