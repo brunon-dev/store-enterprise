@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31205.134
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{66AE0067-8BBF-49B5-AA2B-9ABED6DD822D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "building-blocks", "building-blocks", "{94456B68-5B08-4F32-9948-074A86F5D93D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "services", "services", "{8D9AAEE5-8176-4055-94A0-C30F6586C7EA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "web", "web", "{97196116-080B-41F1-83D4-FF946C3C3F8E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "identidade", "identidade", "{EB4B455C-01EE-4755-A122-FFC259838531}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SE.Identidade.API", "src\services\SE.Identidade.API\SE.Identidade.API.csproj", "{3258B438-951E-4C69-A1ED-8CC6259AB0BD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3258B438-951E-4C69-A1ED-8CC6259AB0BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3258B438-951E-4C69-A1ED-8CC6259AB0BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3258B438-951E-4C69-A1ED-8CC6259AB0BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3258B438-951E-4C69-A1ED-8CC6259AB0BD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{94456B68-5B08-4F32-9948-074A86F5D93D} = {66AE0067-8BBF-49B5-AA2B-9ABED6DD822D}
+		{8D9AAEE5-8176-4055-94A0-C30F6586C7EA} = {66AE0067-8BBF-49B5-AA2B-9ABED6DD822D}
+		{97196116-080B-41F1-83D4-FF946C3C3F8E} = {66AE0067-8BBF-49B5-AA2B-9ABED6DD822D}
+		{EB4B455C-01EE-4755-A122-FFC259838531} = {8D9AAEE5-8176-4055-94A0-C30F6586C7EA}
+		{3258B438-951E-4C69-A1ED-8CC6259AB0BD} = {EB4B455C-01EE-4755-A122-FFC259838531}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9B0FA186-0A48-48A7-99BD-B75ED210B177}
+	EndGlobalSection
+EndGlobal
