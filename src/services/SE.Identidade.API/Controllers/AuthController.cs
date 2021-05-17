@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using SE.Identidade.API.Extensions;
 using SE.Identidade.API.Models;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -78,10 +79,10 @@ namespace SE.Identidade.API.Controllers
             return CustomResponse();
         }
 
-        private async Task<UsuarioRespostaLogin> GerarJwt(string email)
+        #region " Métodos Privados "
+
+        private async Task<ClaimsIdentity> ObterClaimsUsuario(ICollection<Claim> claims, IdentityUser user)
         {
-            var user = await _userManager.FindByEmailAsync(email);
-            var claims = await _userManager.GetClaimsAsync(user);
             var userRoles = await _userManager.GetRolesAsync(user);
 
             claims.Add(new Claim(type: JwtRegisteredClaimNames.Sub, value: user.Id));
@@ -93,7 +94,7 @@ namespace SE.Identidade.API.Controllers
             // Iat - Issue at - quanto o token foi emitido
             claims.Add(new Claim(type: JwtRegisteredClaimNames.Iat, value: ToUnixEpochDate(DateTime.UtcNow).ToString(), ClaimValueTypes.Integer64));
 
-            foreach(var userRole in userRoles)
+            foreach (var userRole in userRoles)
             {
                 claims.Add(new Claim(type: "role", value: userRole));
             }
@@ -102,6 +103,11 @@ namespace SE.Identidade.API.Controllers
             var identityClaims = new ClaimsIdentity();
             identityClaims.AddClaims(claims);
 
+            return identityClaims;
+        }
+
+        private string CodificarToken(ClaimsIdentity identityClaims)
+        {
             // gera o manipulador do token
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
@@ -115,9 +121,12 @@ namespace SE.Identidade.API.Controllers
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), algorithm: SecurityAlgorithms.HmacSha256Signature)
             });
 
-            var encodedToken = tokenHandler.WriteToken(token);
+            return tokenHandler.WriteToken(token);
+        }
 
-            var response = new UsuarioRespostaLogin
+        private UsuarioRespostaLogin ObterRespostaToken(string encodedToken, IdentityUser user, IEnumerable<Claim> claims)
+        {
+            return new UsuarioRespostaLogin
             {
                 AccessToken = encodedToken,
                 ExpiresIn = TimeSpan.FromHours(_appSettings.ExpiracaoHoras).TotalSeconds,
@@ -128,11 +137,23 @@ namespace SE.Identidade.API.Controllers
                     Claims = claims.Select(c => new UsuarioClaim { Type = c.Type, Value = c.Value })
                 }
             };
+        }
 
-            return response;
+        private async Task<UsuarioRespostaLogin> GerarJwt(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            var claims = await _userManager.GetClaimsAsync(user);
+
+            var identityClaims = await ObterClaimsUsuario(claims, user);
+            var encodedToken = CodificarToken(identityClaims);
+
+            return ObterRespostaToken(encodedToken, user, claims);
         }
 
         private static long ToUnixEpochDate(DateTime date)
             => (long)Math.Round((date.ToUniversalTime() - new DateTimeOffset(year: 1970, month: 1, day: 1, hour: 0, minute: 0, second: 0, offset: TimeSpan.Zero)).TotalSeconds);
+
+        #endregion " Métodos Privados "
+
     }
 }
