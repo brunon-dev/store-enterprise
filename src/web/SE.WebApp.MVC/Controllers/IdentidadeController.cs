@@ -18,9 +18,17 @@ namespace SE.WebApp.MVC.Controllers
 
         [HttpPost]
         [Route("nova-conta")]
-        public async Task<ActionResult> Registro(UsuarioResgistro usuarioRegistro)
+        public async Task<IActionResult> Registro(UsuarioRegistro usuarioRegistro)
         {
+            if (!ModelState.IsValid) return View(usuarioRegistro);
 
+            // API - Registro
+
+            if (false) return View(usuarioRegistro);
+
+            // realizar login na APP
+
+            return RedirectToAction("Index", controllerName: "Home");
         }
 
         [HttpGet]
@@ -34,14 +42,22 @@ namespace SE.WebApp.MVC.Controllers
         [Route("login")]
         public async Task<IActionResult> Login(UsuarioLogin usuarioLogin)
         {
-            
+            if (!ModelState.IsValid) return View(usuarioLogin);
+
+            // API - Login
+
+            if (false) return View(usuarioLogin);
+
+            // realizar login na APP
+
+            return RedirectToAction("Index", controllerName: "Home");
         }
 
         [HttpGet]
         [Route("sair")]
         public async Task<IActionResult> Logout()
         {
-
+            return RedirectToAction("Index", controllerName: "Home");
         }
 
     }
