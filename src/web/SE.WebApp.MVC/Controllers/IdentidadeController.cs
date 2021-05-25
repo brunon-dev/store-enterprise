@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
 using SE.WebApp.MVC.Models;
 using SE.WebApp.MVC.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SE.WebApp.MVC.Controllers
@@ -33,9 +36,10 @@ namespace SE.WebApp.MVC.Controllers
             // API - Registro
             var resposta = await _autenticacaoService.Registro(usuarioRegistro);
 
-            if (false) return View(usuarioRegistro);
+            //if (false) return View(usuarioRegistro);
 
             // realizar login na APP
+            await RealizarLogin(resposta);
 
             return RedirectToAction("Index", controllerName: "Home");
         }
@@ -56,9 +60,10 @@ namespace SE.WebApp.MVC.Controllers
             // API - Login
             var resposta = await _autenticacaoService.Login(usuarioLogin);
 
-            if (false) return View(usuarioLogin);
+            //if (false) return View(usuarioLogin);
 
             // realizar login na APP
+            await RealizarLogin(resposta);
 
             return RedirectToAction("Index", controllerName: "Home");
         }
@@ -68,6 +73,36 @@ namespace SE.WebApp.MVC.Controllers
         public async Task<IActionResult> Logout()
         {
             return RedirectToAction("Index", controllerName: "Home");
+        }
+
+        private async Task RealizarLogin(UsuarioRespostaLogin resposta)
+        {
+            var token = ObterTokenFormatado(resposta.AccessToken);
+
+            var claims = new List<Claim>();
+            claims.Add(new Claim(type: "JWT", value: resposta.AccessToken));
+            claims.AddRange(token.Claims);
+
+            // e necessario este novo objeto pq precisamos dos claims no schema correto para armazenamento em um cookie
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var authProperties = new AuthenticationProperties
+            {
+                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(60),
+                IsPersistent = true // cookie vai ser mantido por varios requests, respeitando a expiracao acima
+            };
+
+            // SignInAsync e um metodo do proprio .NET Core (Microsoft.AspNetCore.Authentication) - nao esta associado ao Identity diretamente
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity),
+                authProperties
+                );
+        }
+
+        private static JwtSecurityToken ObterTokenFormatado(string jwtToken)
+        {
+            return new JwtSecurityTokenHandler().ReadToken(jwtToken) as JwtSecurityToken;
         }
 
     }
