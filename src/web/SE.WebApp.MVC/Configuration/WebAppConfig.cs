@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SE.WebApp.MVC.Extensions;
 
 namespace SE.WebApp.MVC.Configuration
 {
@@ -20,7 +21,8 @@ namespace SE.WebApp.MVC.Configuration
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/erro/500");
+                app.UseStatusCodePagesWithRedirects("/erro/{0}");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
@@ -31,6 +33,10 @@ namespace SE.WebApp.MVC.Configuration
 
             // faz a chamada do UseAuthentication e do UseAuthorization entre o UseRouting e o UseEndpoints
             app.UseIdentityConfiguration();
+
+            // usa um Middleware para tratamento de exceção
+            // como tenho um Middleware, todos os requests passam por ele
+            app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {
